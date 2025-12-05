@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  justify-content: center;   /* horizontal zentriert */
+  align-items: center;       /* vertikal zentriert */
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Das Logo bekommt eine feste, sichtbare Größe */
+.logo {
+  height: 36px;      /* z.B. 48px, je nach Geschmack */
+  width: auto;       /* Seitenverhältnis beibehalten */
+  display: block;    /* vermeidet „inline“-Sonderfälle */
+  object-fit: contain;
+}
+
+

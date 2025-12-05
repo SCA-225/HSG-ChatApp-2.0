@@ -1,0 +1,114 @@
+.window {
+    /* responsive BREITE: min 10px, skaliert mit 60% der Viewport-Breite, max 1000px */
+    width: clamp(10px, 80vw, 1500px);  /* min  10 px */
+    /* responsive HÖHE: min 10px, skaliert mit 60% der Viewport-Höhe, max 70vh */
+    height: clamp(10px, 60vh, 70vh);
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    min-height: 0; /* NEU */
+    font-family: 'inter', sans-serif;
+    font-size: 16px;
+    gap: 16px;
+}
+
+.message-space {
+    width: 90%;
+    height: 90%;
+    padding: 8px 0;                  /* kleineres Padding */
+    display: flex;
+    flex-direction: column;           /* horizontale Ausrichtung */
+    /*justify-content: flex-end;     /* Items rechts; verhindert scroll */
+    align-items: flex-end;       /* Items nicht strecken */
+    gap: 8px;
+    overflow-y: auto;
+    flex: 1 1 auto;               /* nimmt den gesamten Restplatz ein */
+    min-height: 0;                /* darf schrumpfen, damit overflow greift */
+    border: solid 2px black;
+    border-radius: 24px;
+}
+
+.example-message {
+    max-width: 70%;
+    min-width: 80px;
+    border-radius: 24px;
+    border: 2px solid black;
+    background-color: rgb(208, 243, 221);
+    color: black;
+    padding: 8px 12px;
+    flex: 0 0 auto;               /* nicht strecken */
+    word-wrap: break-word;
+    margin-right: 8px;
+}
+
+.example-message p {
+    margin: 0;                     /* kein extra Abstand */
+}
+
+/* Nachricht vom aktuellen Benutzer → rechts */
+.example-message.mine {
+    align-self: flex-end;
+    text-align: right;
+    background-color: rgb(208, 243, 221); /* deine Farbe */
+}
+
+/* Nachricht von früheren Benutzern → links */
+.example-message.theirs {
+    align-self: flex-start;
+    text-align: left;
+    background-color: #e5e5e5; /* hellgrau */
+    margin-left: 8px;          /* optischer Abstand */
+}
+
+
+.Nickname {
+    font-size: x-small;
+    font-weight: 100;
+    color: black;
+}
+
+/* ===  CONTAINER  ======================================= */
+.message-input-container {
+  display: flex;
+  width: 90%;
+  height: 50px;           /* → EINDEUTIGE Höhe für beide */
+  gap: 8px;
+}
+
+/* ===  GEMEINSAME BASIS  ================================ */
+.message-input,
+.send-button {
+  height: 100%;           /* → füllt die 50px des Containers */
+  box-sizing: border-box; /* → Border & Padding werden mitgerechnet */
+  margin: 0;              /* → kein Zusatzabstand */
+}
+
+/* ===  TEXTFELD  ======================================== */
+.message-input {
+  flex: 1;                      /* → nimmt den ganzen verfügbaren Platz */
+  padding: 0 16px;              /* → nur links/rechts, oben/unten = 0 */
+  border-radius: 24px;
+  border: 2px solid black;
+  resize: none;                 /* optional: User kann es nicht größer ziehen */
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  overflow-y: auto;
+}
+
+/* ===  BUTTON  ========================================== */
+.send-button {
+  flex: 0 0 60px;               /* feste Breite, gleiche Höhe wie Textfeld */
+  background-color: green;
+  border-radius: 24px;
+  border: 2px solid black;
+
+  display: flex;                /* Pfeil zentrieren */
+  align-items: center;
+  justify-content: center;
+
+  color: white;                 /* Pfeil weiß */
+  font-size: 28px;              /* größerer Pfeil */
+  font-weight: bold;
+  line-height: 1;               /* verhindert Verschiebungen */
+  cursor: pointer;
+}

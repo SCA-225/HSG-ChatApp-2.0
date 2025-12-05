@@ -1,0 +1,46 @@
+footer {
+  color: white;
+  font-family: 'Inter', sans-serif;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 15px 20px;
+  box-sizing: border-box;
+}
+
+/* Oberer Text */
+.footer-top {
+  font-size: 13px;
+  align-self: flex-start;
+}
+
+/* Unterer Bereich */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 12px;
+}
+
+/* Linke Seite unten */
+.footer-left {
+  display: flex;
+  gap: 15px;
+}
+
+/* Rechte Seite unten */
+.footer-right {
+  text-align: right;
+}
+
+/* Links selbst */
+.footer-link {
+  color: white;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}

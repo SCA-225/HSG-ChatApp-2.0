@@ -1,0 +1,41 @@
+.nickname-container {
+    padding: 20px;
+    min-width: 5vw;
+    margin-right: 5vw;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+
+    
+}
+
+.heading{
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.send-button {
+    background-color: green;
+    font-weight: bold;
+    color: white;
+    border: none;
+    min-height: 20px;
+    border-radius: 8px;
+    border-width: 3px;
+    padding: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+    
+}
+
+.nickname-input{
+    border-radius: 8px;
+    border-width: 3px;
+    border-color: black;
+    border-style: solid;
+    min-height: 20px;
+    margin-bottom: 16px;
+    padding: 4px;
+}

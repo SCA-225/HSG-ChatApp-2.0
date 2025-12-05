@@ -1,0 +1,9 @@
+/* You can add global styles to this file, and also import other style files */
+/* Global reset so the app can truly use the full viewport */
+html, body {
+  height: 100 vh;
+  width: 100 vw;
+  margin: 0;         /* removes the default 8px browser margin */
+  padding: 0;
+  overflow: hidden;
+}

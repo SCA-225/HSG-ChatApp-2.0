@@ -1,0 +1,34 @@
+<div class="window">
+  <div class="message-space" #messagespace> 
+
+    <div
+      class="example-message"
+      *ngFor="let msg of messages"
+      [ngClass]="{
+        'mine': msg.nickname === nickname,
+        'theirs': msg.nickname !== nickname
+      }"
+    >
+      <p class="Nickname">{{ msg.nickname }} - {{ msg.date }}</p>
+      <p>{{ msg.text }}</p>
+    </div>
+
+  </div>
+
+  <div class="message-input-container">
+    <textarea
+      class="message-input"
+      [(ngModel)]="messageText"
+      placeholder="Schreibe eine Nachricht..."
+    ></textarea>
+
+    <button
+      (click)="sendMessage()"
+      class="send-button"
+      [disabled]="!nickname">
+      <span *ngIf="nickname">➤</span>
+    </button>
+  </div>
+
+</div>
+
