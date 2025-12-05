@@ -1,0 +1,6 @@
+
+# ignore deps in nested folders
+**/node_modules/
+**/dist/
+**/.angular/
+
