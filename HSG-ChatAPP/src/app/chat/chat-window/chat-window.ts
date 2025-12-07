@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -24,20 +24,36 @@ interface UiMessage {
   standalone: true,
   imports: [FormsModule, CommonModule],
 })
-export class ChatWindow {
+export class ChatWindow implements OnInit, OnDestroy {
   @Input() nickname!: string;
 
   messages: UiMessage[] = [];
   messageText: string = '';
 
+  // Handle für das regelmäßige Polling
+  private pollHandle: ReturnType<typeof setInterval> | null = null;
+
   // --------------------------------------------------
-  // Beim Start: History vom Server laden
+  // Lifecycle: Beim Start und beim Beenden
   // --------------------------------------------------
   async ngOnInit(): Promise<void> {
-    await this.loadHistoryFromServer();
+    // einmal initial laden
+    await this.loadHistoryFromServer(false);
+    // danach in Intervallen nachladen
+    this.startPolling();
   }
 
-  private async loadHistoryFromServer(): Promise<void> {
+  ngOnDestroy(): void {
+    if (this.pollHandle) {
+      clearInterval(this.pollHandle);
+      this.pollHandle = null;
+    }
+  }
+
+  // --------------------------------------------------
+  // History vom Server laden (optional aus Polling)
+  // --------------------------------------------------
+  private async loadHistoryFromServer(fromPolling: boolean = false): Promise<void> {
     try {
       const response = await fetch(`${API_BASE_URL}/history`);
       if (!response.ok) {
@@ -53,8 +69,10 @@ export class ChatWindow {
         date: new Date(m.createdAt).toLocaleString('de'),
       }));
 
-      // nach dem Laden nach unten scrollen
-      setTimeout(() => this.scrollToBottom(), 0);
+      // Nur beim initialen Laden oder nach eigenem Senden auto-scrollen
+      if (!fromPolling) {
+        setTimeout(() => this.scrollToBottom(), 0);
+      }
     } catch (err) {
       console.error('Server nicht erreichbar (GET /history)', err);
     }
@@ -93,7 +111,7 @@ export class ChatWindow {
 
       const saved = (await response.json()) as ServerMessage;
 
-      // in UI-Format umwandeln
+      // Im UI anzeigen (direkt)
       this.messages.push({
         text: saved.message,
         nickname: saved.nickname,
@@ -106,6 +124,17 @@ export class ChatWindow {
       console.error('Server nicht erreichbar (POST /history)', err);
       alert('Server nicht erreichbar. Läuft der Chat-API-Server auf Port 3000?');
     }
+  }
+
+  // --------------------------------------------------
+  // Polling: alle 2 Sekunden neue History holen
+  // --------------------------------------------------
+  private startPolling(): void {
+    if (this.pollHandle) return; // nicht doppelt starten
+
+    this.pollHandle = setInterval(() => {
+      this.loadHistoryFromServer(true); // true = kommt aus Polling
+    }, 2000); // 2000 ms = 2 Sekunden
   }
 
   // --------------------------------------------------
