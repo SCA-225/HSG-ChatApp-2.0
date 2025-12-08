@@ -80,22 +80,7 @@ app.get('/nicknames', function (req, res, next) {
 });
 
 app.get('/nicknames/:id', function (req, res, next) {
-  // simple for loop
-  //   for (var i = 0; nicknames.length > 0; i++) {
-  //     var nickname = nicknames[i]
-
-  //     if (nickname && nickname.id === req.params.id) {
-  //       res.send({ username: nickname.username, id: nickname.id })
-  //     }
-  // }
-
-  //   foreach in array
-  //   nicknames.forEach((nickname) => {
-  //     if (nickname && nickname.id === req.params.id) {
-  //       res.send({ username: nickname.username, id: nickname.id })
-  //     }
-  //   })
-
+  
   // build-in .find function
   const id = +req.params.id;
   const nickname = nicknames.find((e) => e.id === id);
