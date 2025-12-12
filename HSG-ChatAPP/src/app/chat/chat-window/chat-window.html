@@ -1,12 +1,15 @@
 <div class="window">
-  <div class="message-space" #messagespace> 
+  <div class="message-space" #messageSpace>
 
     <div
       class="example-message"
       *ngFor="let msg of messages"
       [ngClass]="{
-        'mine': msg.nickname === nickname,
-        'theirs': msg.nickname !== nickname
+        mine: msg.nickname === nickname,
+        theirs: msg.nickname !== nickname
+      }"
+      [ngStyle]="{
+        'background-color': getBubbleColor(msg)
       }"
     >
       <p class="Nickname">{{ msg.nickname }} - {{ msg.date }}</p>
@@ -25,10 +28,9 @@
     <button
       (click)="sendMessage()"
       class="send-button"
-      [disabled]="!nickname">
+      [disabled]="!nickname"
+    >
       <span *ngIf="nickname">➤</span>
     </button>
   </div>
-
 </div>
-

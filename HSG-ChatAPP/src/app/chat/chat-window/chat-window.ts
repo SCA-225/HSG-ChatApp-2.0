@@ -30,16 +30,26 @@ export class ChatWindow implements OnInit, OnDestroy {
   messages: UiMessage[] = [];
   messageText: string = '';
 
-  // Handle für das regelmäßige Polling
+  // Polling-Handle
   private pollHandle: ReturnType<typeof setInterval> | null = null;
 
+  // 🔹 Farbpalette für andere Nicknames
+  private otherColors: string[] = [
+    '#D7F3DC', // Grün1
+    '#B7E4C7', // Grün2
+    '#95D5B2', // Grün3
+    '#74C79D', // Grün4
+    '#51B788', // Grün5
+  ];
+
+  // 🔹 Map: welcher Nickname bekommt welche Farbe?
+  private nicknameColors = new Map<string, string>();
+
   // --------------------------------------------------
-  // Lifecycle: Beim Start und beim Beenden
+  // Lifecycle
   // --------------------------------------------------
   async ngOnInit(): Promise<void> {
-    // einmal initial laden
     await this.loadHistoryFromServer(false);
-    // danach in Intervallen nachladen
     this.startPolling();
   }
 
@@ -51,7 +61,7 @@ export class ChatWindow implements OnInit, OnDestroy {
   }
 
   // --------------------------------------------------
-  // History vom Server laden (optional aus Polling)
+  // History vom Server laden
   // --------------------------------------------------
   private async loadHistoryFromServer(fromPolling: boolean = false): Promise<void> {
     try {
@@ -69,7 +79,6 @@ export class ChatWindow implements OnInit, OnDestroy {
         date: new Date(m.createdAt).toLocaleString('de'),
       }));
 
-      // Nur beim initialen Laden oder nach eigenem Senden auto-scrollen
       if (!fromPolling) {
         setTimeout(() => this.scrollToBottom(), 0);
       }
@@ -111,7 +120,6 @@ export class ChatWindow implements OnInit, OnDestroy {
 
       const saved = (await response.json()) as ServerMessage;
 
-      // Im UI anzeigen (direkt)
       this.messages.push({
         text: saved.message,
         nickname: saved.nickname,
@@ -127,14 +135,14 @@ export class ChatWindow implements OnInit, OnDestroy {
   }
 
   // --------------------------------------------------
-  // Polling: alle 2 Sekunden neue History holen
+  // Polling für Live-Updates
   // --------------------------------------------------
   private startPolling(): void {
-    if (this.pollHandle) return; // nicht doppelt starten
+    if (this.pollHandle) return;
 
     this.pollHandle = setInterval(() => {
-      this.loadHistoryFromServer(true); // true = kommt aus Polling
-    }, 2000); // 2000 ms = 2 Sekunden
+      this.loadHistoryFromServer(true);
+    }, 2000);
   }
 
   // --------------------------------------------------
@@ -145,5 +153,24 @@ export class ChatWindow implements OnInit, OnDestroy {
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
+  }
+
+  // --------------------------------------------------
+  // 🔹 Farb-Logik pro Nachricht / Nickname
+  // --------------------------------------------------
+  getBubbleColor(msg: UiMessage): string {
+    // Eigene Nachrichten immer in "deinem" Grün
+    if (msg.nickname === this.nickname) {
+      return '#2E6A50'; // dein aktuelles Grün (Grün6)
+    }
+
+    // Für andere: feste Farbe pro Nickname
+    let color = this.nicknameColors.get(msg.nickname);
+    if (!color) {
+      const index = this.nicknameColors.size % this.otherColors.length;
+      color = this.otherColors[index];
+      this.nicknameColors.set(msg.nickname, color);
+    }
+    return color;
   }
 }
