@@ -18,17 +18,15 @@ export class Nickname {
 
   selectedAvatar: string = 'avatar1.png'; // Default
 
-selectAvatar(avatar: string) {
-  this.selectedAvatar = avatar;
-}
+  selectAvatar(avatar: string) {
+    this.selectedAvatar = avatar;
+  }
 
   // --------------------------------------------------
-  // Nickname anlegen → POST /nicknames
+  // Nickname anlegen → POST /nicknames (mit Avatar)
   // --------------------------------------------------
   async createNickname(nickname: string, avatar: string): Promise<void> {
-    // 1) Local Cleaning
-    nickname = nickname.replace(/(\r\n|\r|\n)/, '');
-    nickname = nickname.trim();
+    nickname = nickname.replace(/(\r\n|\r|\n)/, '').trim();
 
     if (!nickname) {
       alert('Please add a nickname!');
@@ -40,11 +38,10 @@ selectAvatar(avatar: string) {
       const response = await fetch(`${API_BASE_URL}/nicknames`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nickname }),
+        body: JSON.stringify({ nickname, avatar }), // << WICHTIG: avatar mitsenden
       });
 
       if (response.status === 409) {
-        // Nickname schon vergeben
         const msg = await response.text();
         this.errorMessage = msg;
         alert(msg);
@@ -61,8 +58,11 @@ selectAvatar(avatar: string) {
       const saved = await response.json();
 
       this.errorMessage = '';
-      // an Body weitergeben → dort an ChatWindow gebunden
-      this.nicknameCreate.emit({nickname: saved.nickname ?? nickname, avatar: this.selectedAvatar,});
+      this.nicknameCreate.emit({
+        nickname: saved.nickname ?? nickname,
+        avatar: saved.avatar ?? this.selectedAvatar,
+      });
+
       this.nickname = '';
     } catch (err) {
       console.error('Server nicht erreichbar (POST /nicknames)', err);

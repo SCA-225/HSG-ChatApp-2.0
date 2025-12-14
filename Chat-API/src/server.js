@@ -11,31 +11,29 @@ const nicknames = [];
 
 // Add headers
 app.use(function (req, res, next) {
-  // Website you wish to allow to connect
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  // Request methods you wish to allow
   res.setHeader(
     'Access-Control-Allow-Methods',
     'GET, POST, OPTIONS, PUT, PATCH, DELETE',
   );
 
-  // Request headers you wish to allow
   res.header(
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept',
   );
 
-  // Handle preflight, it must return 200
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Important: Add security!!!
-
-  // Pass to next layer of middleware
   next();
 });
+
+// --- helper ----------------------------------------------------
+function getNicknameEntryByName(name) {
+  return nicknames.find((n) => n.nickname === name);
+}
 
 // root
 app.get('/', function (req, res, next) {
@@ -61,11 +59,16 @@ app.post('/history', function (req, res, next) {
     return;
   }
 
+  // Avatar IMMER serverseitig aus /nicknames ziehen
+  const entry = getNicknameEntryByName(nickname);
+  const avatar = entry?.avatar ?? 'avatar1.png'; // fallback, falls Alt-Daten
+
   const date = new Date();
   const message = {
     id: chatHistory.length + 1,
     message: chatMessage,
     nickname: nickname,
+    avatar: avatar,
     createdAt: date,
   };
 
@@ -80,8 +83,6 @@ app.get('/nicknames', function (req, res, next) {
 });
 
 app.get('/nicknames/:id', function (req, res, next) {
-  
-  // build-in .find function
   const id = +req.params.id;
   const nickname = nicknames.find((e) => e.id === id);
 
@@ -95,9 +96,15 @@ app.get('/nicknames/:id', function (req, res, next) {
 
 app.post('/nicknames', function (req, res, next) {
   const userName = req.body?.nickname?.toString();
+  const avatar = req.body?.avatar?.toString(); // << NEU
 
   if (!userName) {
     res.status(400).send('Nickname is missing.');
+    return;
+  }
+
+  if (!avatar) {
+    res.status(400).send('Avatar is missing.');
     return;
   }
 
@@ -110,6 +117,7 @@ app.post('/nicknames', function (req, res, next) {
   const nickname = {
     id: nicknames.length + 1,
     nickname: userName,
+    avatar: avatar, // << NEU
     createdAt: date,
   };
 

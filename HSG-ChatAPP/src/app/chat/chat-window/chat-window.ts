@@ -8,6 +8,7 @@ interface ServerMessage {
   id: number;
   message: string;
   nickname: string;
+  avatar: string;     // << NEU
   createdAt: string;
 }
 
@@ -27,41 +28,17 @@ interface UiMessage {
 })
 export class ChatWindow implements OnInit, OnDestroy {
   @Input() nickname!: string;
-  @Input() avatar!: string; // z.B. '/avatar1.png'
+  @Input() avatar!: string;
 
   messages: UiMessage[] = [];
   messageText: string = '';
-
-  private bannedWords: string[] = [
-  'fuck', 'shit', 'asshole', 'bitch', 'idiot', 'dumm', 'scheisse',
-];
 
   private pollHandle: ReturnType<typeof setInterval> | null = null;
   private lastMessageId = 0;
 
   // Farbpalette für fremde Nachrichten
-  private otherColors: string[] = [
-    '#D7F3DC',
-    '#B7E4C7',
-    '#95D5B2',
-    '#74C79D',
-    '#51B788',
-  ];
-
+  private otherColors: string[] = ['#D7F3DC', '#B7E4C7', '#95D5B2', '#74C79D', '#51B788'];
   private nicknameColors = new Map<string, string>();
-  private nicknameAvatars = new Map<string, string>();
-
-  // Schimpffilter
-  private filterBadWords(text: string): string {
-  let result = text;
-
-  this.bannedWords.forEach(word => {
-    const regex = new RegExp(`\\b${word}\\b`, 'gi');
-    result = result.replace(regex, '***');
-  });
-
-  return result;
-}
 
   // --------------------------------------------------
   // Lifecycle
@@ -79,7 +56,7 @@ export class ChatWindow implements OnInit, OnDestroy {
   }
 
   // --------------------------------------------------
-  // Initiale History (einmalig)
+  // Initiale History
   // --------------------------------------------------
   private async loadInitialHistory(): Promise<void> {
     try {
@@ -92,7 +69,7 @@ export class ChatWindow implements OnInit, OnDestroy {
         text: m.message,
         nickname: m.nickname,
         date: new Date(m.createdAt).toLocaleString('de'),
-        avatar: this.getAvatarForNickname(m.nickname),
+        avatar: m.avatar ?? 'avatar1.png', // << kommt jetzt vom Server
       }));
 
       if (data.length > 0) {
@@ -106,7 +83,7 @@ export class ChatWindow implements OnInit, OnDestroy {
   }
 
   // --------------------------------------------------
-  // Polling: nur neue Nachrichten anhängen
+  // Polling: nur neue Nachrichten
   // --------------------------------------------------
   private async pollNewMessages(): Promise<void> {
     try {
@@ -115,7 +92,6 @@ export class ChatWindow implements OnInit, OnDestroy {
 
       const data = (await response.json()) as ServerMessage[];
       const newMessages = data.filter((m) => m.id > this.lastMessageId);
-
       if (newMessages.length === 0) return;
 
       newMessages.forEach((m) => {
@@ -123,7 +99,7 @@ export class ChatWindow implements OnInit, OnDestroy {
           text: m.message,
           nickname: m.nickname,
           date: new Date(m.createdAt).toLocaleString('de'),
-          avatar: this.getAvatarForNickname(m.nickname),
+          avatar: m.avatar ?? 'avatar1.png', // << kommt jetzt vom Server
         });
         this.lastMessageId = m.id;
       });
@@ -153,14 +129,12 @@ export class ChatWindow implements OnInit, OnDestroy {
     const text = this.messageText.trim();
     if (!text) return;
 
-    const cleanText = this.filterBadWords(text);
-
     try {
       const response = await fetch(`${API_BASE_URL}/history`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: cleanText,
+          message: text,
           nickname: this.nickname,
         }),
       });
@@ -169,11 +143,12 @@ export class ChatWindow implements OnInit, OnDestroy {
 
       const saved = (await response.json()) as ServerMessage;
 
+      // wichtig: Avatar NICHT lokal raten, sondern aus Server-Antwort nehmen
       this.messages.push({
         text: saved.message,
         nickname: saved.nickname,
         date: new Date(saved.createdAt).toLocaleString('de'),
-        avatar: this.avatar,
+        avatar: saved.avatar ?? this.avatar ?? 'avatar1.png',
       });
 
       this.lastMessageId = saved.id;
@@ -195,7 +170,7 @@ export class ChatWindow implements OnInit, OnDestroy {
   }
 
   // --------------------------------------------------
-  // Farben
+  // Farben (wie vorher)
   // --------------------------------------------------
   getBubbleColor(msg: UiMessage): string {
     if (msg.nickname === this.nickname) {
@@ -209,21 +184,5 @@ export class ChatWindow implements OnInit, OnDestroy {
       this.nicknameColors.set(msg.nickname, color);
     }
     return color;
-  }
-
-  // --------------------------------------------------
-  // Avatar-Logik
-  // --------------------------------------------------
-  private getAvatarForNickname(nickname: string): string {
-    if (nickname === this.nickname) {
-      return this.avatar;
-    }
-
-    let avatar = this.nicknameAvatars.get(nickname);
-    if (!avatar) {
-      avatar = '/avatar1.png';
-      this.nicknameAvatars.set(nickname, avatar);
-    }
-    return avatar;
   }
 }
