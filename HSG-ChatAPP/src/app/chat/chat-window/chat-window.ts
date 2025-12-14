@@ -15,6 +15,7 @@ interface UiMessage {
   text: string;
   nickname: string;
   date: string;
+  avatar: string;
 }
 
 @Component({
@@ -26,30 +27,31 @@ interface UiMessage {
 })
 export class ChatWindow implements OnInit, OnDestroy {
   @Input() nickname!: string;
+  @Input() avatar!: string; // z.B. '/avatar1.png'
 
   messages: UiMessage[] = [];
   messageText: string = '';
 
-  // Polling-Handle
   private pollHandle: ReturnType<typeof setInterval> | null = null;
+  private lastMessageId = 0;
 
-  // 🔹 Farbpalette für andere Nicknames
+  // Farbpalette für fremde Nachrichten
   private otherColors: string[] = [
-    '#D7F3DC', // Grün1
-    '#B7E4C7', // Grün2
-    '#95D5B2', // Grün3
-    '#74C79D', // Grün4
-    '#51B788', // Grün5
+    '#D7F3DC',
+    '#B7E4C7',
+    '#95D5B2',
+    '#74C79D',
+    '#51B788',
   ];
 
-  // 🔹 Map: welcher Nickname bekommt welche Farbe?
   private nicknameColors = new Map<string, string>();
+  private nicknameAvatars = new Map<string, string>();
 
   // --------------------------------------------------
   // Lifecycle
   // --------------------------------------------------
   async ngOnInit(): Promise<void> {
-    await this.loadHistoryFromServer(false);
+    await this.loadInitialHistory();
     this.startPolling();
   }
 
@@ -61,15 +63,12 @@ export class ChatWindow implements OnInit, OnDestroy {
   }
 
   // --------------------------------------------------
-  // History vom Server laden
+  // Initiale History (einmalig)
   // --------------------------------------------------
-  private async loadHistoryFromServer(fromPolling: boolean = false): Promise<void> {
+  private async loadInitialHistory(): Promise<void> {
     try {
       const response = await fetch(`${API_BASE_URL}/history`);
-      if (!response.ok) {
-        console.error('Fehler beim Laden der History', response.statusText);
-        return;
-      }
+      if (!response.ok) return;
 
       const data = (await response.json()) as ServerMessage[];
 
@@ -77,18 +76,57 @@ export class ChatWindow implements OnInit, OnDestroy {
         text: m.message,
         nickname: m.nickname,
         date: new Date(m.createdAt).toLocaleString('de'),
+        avatar: this.getAvatarForNickname(m.nickname),
       }));
 
-      if (!fromPolling) {
-        setTimeout(() => this.scrollToBottom(), 0);
+      if (data.length > 0) {
+        this.lastMessageId = data[data.length - 1].id;
       }
+
+      setTimeout(() => this.scrollToBottom(), 0);
     } catch (err) {
-      console.error('Server nicht erreichbar (GET /history)', err);
+      console.error('Fehler beim Initial-Laden', err);
     }
   }
 
   // --------------------------------------------------
-  // Nachricht senden → POST /history
+  // Polling: nur neue Nachrichten anhängen
+  // --------------------------------------------------
+  private async pollNewMessages(): Promise<void> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/history`);
+      if (!response.ok) return;
+
+      const data = (await response.json()) as ServerMessage[];
+      const newMessages = data.filter((m) => m.id > this.lastMessageId);
+
+      if (newMessages.length === 0) return;
+
+      newMessages.forEach((m) => {
+        this.messages.push({
+          text: m.message,
+          nickname: m.nickname,
+          date: new Date(m.createdAt).toLocaleString('de'),
+          avatar: this.getAvatarForNickname(m.nickname),
+        });
+        this.lastMessageId = m.id;
+      });
+
+      setTimeout(() => this.scrollToBottom(), 0);
+    } catch (err) {
+      console.error('Polling Fehler', err);
+    }
+  }
+
+  private startPolling(): void {
+    if (this.pollHandle) return;
+    this.pollHandle = setInterval(() => {
+      this.pollNewMessages();
+    }, 2000);
+  }
+
+  // --------------------------------------------------
+  // Nachricht senden
   // --------------------------------------------------
   async sendMessage(): Promise<void> {
     if (!this.nickname) {
@@ -97,10 +135,7 @@ export class ChatWindow implements OnInit, OnDestroy {
     }
 
     const text = this.messageText.trim();
-    if (!text) {
-      alert('Please add a Message!');
-      return;
-    }
+    if (!text) return;
 
     try {
       const response = await fetch(`${API_BASE_URL}/history`, {
@@ -112,11 +147,7 @@ export class ChatWindow implements OnInit, OnDestroy {
         }),
       });
 
-      if (!response.ok) {
-        const msg = await response.text();
-        alert('Fehler beim Senden: ' + msg);
-        return;
-      }
+      if (!response.ok) return;
 
       const saved = (await response.json()) as ServerMessage;
 
@@ -124,29 +155,19 @@ export class ChatWindow implements OnInit, OnDestroy {
         text: saved.message,
         nickname: saved.nickname,
         date: new Date(saved.createdAt).toLocaleString('de'),
+        avatar: this.avatar,
       });
 
+      this.lastMessageId = saved.id;
       this.messageText = '';
       setTimeout(() => this.scrollToBottom(), 0);
     } catch (err) {
-      console.error('Server nicht erreichbar (POST /history)', err);
-      alert('Server nicht erreichbar. Läuft der Chat-API-Server auf Port 3000?');
+      console.error('Sendefehler', err);
     }
   }
 
   // --------------------------------------------------
-  // Polling für Live-Updates
-  // --------------------------------------------------
-  private startPolling(): void {
-    if (this.pollHandle) return;
-
-    this.pollHandle = setInterval(() => {
-      this.loadHistoryFromServer(true);
-    }, 2000);
-  }
-
-  // --------------------------------------------------
-  // Chat nach unten scrollen
+  // Scroll
   // --------------------------------------------------
   private scrollToBottom(): void {
     const container = document.querySelector('.message-space') as HTMLElement | null;
@@ -156,15 +177,13 @@ export class ChatWindow implements OnInit, OnDestroy {
   }
 
   // --------------------------------------------------
-  // 🔹 Farb-Logik pro Nachricht / Nickname
+  // Farben
   // --------------------------------------------------
   getBubbleColor(msg: UiMessage): string {
-    // Eigene Nachrichten immer in "deinem" Grün
     if (msg.nickname === this.nickname) {
-      return '#2E6A50'; // dein aktuelles Grün (Grün6)
+      return '#2E6A50';
     }
 
-    // Für andere: feste Farbe pro Nickname
     let color = this.nicknameColors.get(msg.nickname);
     if (!color) {
       const index = this.nicknameColors.size % this.otherColors.length;
@@ -172,5 +191,21 @@ export class ChatWindow implements OnInit, OnDestroy {
       this.nicknameColors.set(msg.nickname, color);
     }
     return color;
+  }
+
+  // --------------------------------------------------
+  // Avatar-Logik
+  // --------------------------------------------------
+  private getAvatarForNickname(nickname: string): string {
+    if (nickname === this.nickname) {
+      return this.avatar;
+    }
+
+    let avatar = this.nicknameAvatars.get(nickname);
+    if (!avatar) {
+      avatar = '/avatar1.png';
+      this.nicknameAvatars.set(nickname, avatar);
+    }
+    return avatar;
   }
 }

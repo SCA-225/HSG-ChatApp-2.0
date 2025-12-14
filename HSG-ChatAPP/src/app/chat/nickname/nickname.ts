@@ -11,15 +11,21 @@ const API_BASE_URL = 'http://localhost:3000';
   imports: [FormsModule],
 })
 export class Nickname {
-  nicknameCreate = output<string>();
+  nicknameCreate = output<{ nickname: string; avatar: string }>();
 
   nickname: string = '';
   errorMessage: string = '';
 
+  selectedAvatar: string = 'avatar1.png'; // Default
+
+selectAvatar(avatar: string) {
+  this.selectedAvatar = avatar;
+}
+
   // --------------------------------------------------
   // Nickname anlegen → POST /nicknames
   // --------------------------------------------------
-  async createNickname(nickname: string): Promise<void> {
+  async createNickname(nickname: string, avatar: string): Promise<void> {
     // 1) Local Cleaning
     nickname = nickname.replace(/(\r\n|\r|\n)/, '');
     nickname = nickname.trim();
@@ -56,7 +62,7 @@ export class Nickname {
 
       this.errorMessage = '';
       // an Body weitergeben → dort an ChatWindow gebunden
-      this.nicknameCreate.emit(saved.nickname ?? nickname);
+      this.nicknameCreate.emit({nickname: saved.nickname ?? nickname, avatar: this.selectedAvatar,});
       this.nickname = '';
     } catch (err) {
       console.error('Server nicht erreichbar (POST /nicknames)', err);

@@ -1,20 +1,27 @@
-<div class="window">
+
   <div class="message-space" #messageSpace>
 
     <div
-      class="example-message"
-      *ngFor="let msg of messages"
-      [ngClass]="{
-        mine: msg.nickname === nickname,
-        theirs: msg.nickname !== nickname
-      }"
-      [ngStyle]="{
-        'background-color': getBubbleColor(msg)
-      }"
-    >
-      <p class="Nickname">{{ msg.nickname }} - {{ msg.date }}</p>
+  class="example-message"
+  *ngFor="let msg of messages"
+  [ngClass]="{
+    mine: msg.nickname === nickname,
+    theirs: msg.nickname !== nickname
+  }">
+
+  <img class="avatar" [src]="msg.avatar" alt="Avatar">
+
+  <div class="message-content">
+    <div
+      class="bubble"
+      [ngStyle]="{ 'background-color': getBubbleColor(msg) }">
+
+      <p class="nickname">{{ msg.nickname }} – {{ msg.date }}</p>
       <p>{{ msg.text }}</p>
+
     </div>
+  </div>
+</div>
 
   </div>
 
@@ -25,12 +32,14 @@
       placeholder="Schreibe eine Nachricht..."
     ></textarea>
 
-    <button
-      (click)="sendMessage()"
-      class="send-button"
-      [disabled]="!nickname"
-    >
-      <span *ngIf="nickname">➤</span>
+
+    <button class="send-button" (click)="sendMessage()" [disabled]="!nickname">
+        Send
+        <svg class="icon" width="15" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <path d="M12.3536 4.03556C12.5488 3.8403 12.5488 3.52372 12.3536 3.32845L9.17157 0.146473C8.97631 -0.0487892 8.65973 -0.0487892 8.46447 0.146473C8.2692 0.341735 8.2692 0.658318 8.46447 0.85358L11.2929 3.68201L8.46447 6.51043C8.2692 6.7057 8.2692 7.02228 8.46447 7.21754C8.65973 7.4128 8.97631 7.4128 9.17157 7.21754L12.3536 4.03556ZM0 3.68201L0 4.18201L12 4.18201V3.68201V3.18201L0 3.18201L0 3.68201Z" fill="#52B788"/>
+        </svg>
+
+
     </button>
   </div>
-</div>
+

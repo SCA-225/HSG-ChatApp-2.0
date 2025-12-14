@@ -1,9 +1,51 @@
- <div class="nickname-container">
+<p class="heading">Details</p>
 
-    <p class="heading">Nickname</p>
+    <p class="heading2">Select Nickname</p>
 
-    <input class="nickname-input" type="text" [(ngModel)]="nickname" placeholder="Benutzernamen eintragen">
+    <input class="input" type="text" [(ngModel)]="nickname" placeholder="Benutzernamen eintragen">
+
+    <p class="heading2">Select Avatar</p>
+
+
+    <div class="avatar-selection">
+        <img
+        src="avatar1.png"
+        class="avatar"
+        [class.selected]="selectedAvatar === 'avatar1.png'"
+        (click)="selectAvatar('avatar1.png')">
+
+        <img
+        src="avatar2.png"
+        class="avatar"
+        [class.selected]="selectedAvatar === 'avatar2.png'"
+        (click)="selectAvatar('avatar2.png')">
+
+        <img
+        src="avatar3.png"
+        class="avatar"
+        [class.selected]="selectedAvatar === 'avatar3.png'"
+        (click)="selectAvatar('avatar3.png')">
+
+        <img
+        src="avatar4.png"
+        class="avatar"
+        [class.selected]="selectedAvatar === 'avatar4.png'"
+        (click)="selectAvatar('avatar4.png')">
+    </div>
+
+
             
-    <button (click)="createNickname(nickname) "class="send-button">Enter</button>
+    <button (click)="createNickname(nickname, selectedAvatar) "class="send-button">
+        Confirm
+        <svg class="icon" width="15" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+         <path d="M12.3536 4.03556C12.5488 3.8403 12.5488 3.52372 12.3536 3.32845L9.17157 0.146473C8.97631 -0.0487892 8.65973 -0.0487892 8.46447 0.146473C8.2692 0.341735 8.2692 0.658318 8.46447 0.85358L11.2929 3.68201L8.46447 6.51043C8.2692 6.7057 8.2692 7.02228 8.46447 7.21754C8.65973 7.4128 8.97631 7.4128 9.17157 7.21754L12.3536 4.03556ZM0 3.68201L0 4.18201L12 4.18201V3.68201V3.18201L0 3.18201L0 3.68201Z" fill="#52B788"/>
+        </svg>
 
-</div>
+
+    </button>
+
+
+
+<img src="/star1-nickname.svg" class="star1-nickname"/>
+
+<img src="/star2-nichname.svg" class="star2-nickname"/>

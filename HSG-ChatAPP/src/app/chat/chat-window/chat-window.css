@@ -1,41 +1,37 @@
-.window {
-    /* responsive BREITE: min 10px, skaliert mit 60% der Viewport-Breite, max 1000px */
-    width: clamp(10px, 80vw, 1500px);  /* min  10 px */
-    /* responsive HÖHE: min 10px, skaliert mit 60% der Viewport-Höhe, max 70vh */
-    height: clamp(10px, 60vh, 70vh);
-    display: flex;
-    flex-direction: column;
-    border-radius: 5px;
-    min-height: 0; /* NEU */
-    font-family: 'inter', sans-serif;
-    font-size: 16px;
-    gap: 16px;
+:host {
+  flex: 2;
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  
+
+  display: flex;          /* damit Content (Chatverlauf + Input) layoutbar ist */
+  flex-direction: column;
+
+  gap: 1rem;
+
+  box-shadow: 0 4px 25px rgba(27, 67, 50, 0.1);
 }
 
 .message-space {
-    width: 90%;
-    height: 90%;
-    padding: 8px 0;                  /* kleineres Padding */
     display: flex;
     flex-direction: column;           /* horizontale Ausrichtung */
     /*justify-content: flex-end;     /* Items rechts; verhindert scroll */
     align-items: flex-end;       /* Items nicht strecken */
-    gap: 8px;
+    gap: 1rem;
     overflow-y: auto;
     flex: 1 1 auto;               /* nimmt den gesamten Restplatz ein */
     min-height: 0;                /* darf schrumpfen, damit overflow greift */
-    border: solid 2px black;
-    border-radius: 24px;
 }
 
 .example-message {
     max-width: 70%;
     min-width: 80px;
-    border-radius: 24px;
-    border: 2px solid black;
-    color: black;
-    padding: 8px 12px;
     flex: 0 0 auto;               /* nicht strecken */
+    display: flex;
+    flex-direction: row;
+    gap: 0.25rem;
     word-wrap: break-word;
     margin-right: 8px;
 }
@@ -48,6 +44,10 @@
 .example-message.mine {
     align-self: flex-end;
     text-align: right;
+    color: #ffffff;
+    flex-direction: row-reverse;  /* Avatar rechts, Text links */
+    align-self: flex-end;
+    text-align: right;
 }
 
 /* Nachricht von früheren Benutzern → links */
@@ -58,54 +58,71 @@
 }
 
 
-.Nickname {
-    font-size: x-small;
-    font-weight: 100;
-    color: black;
+.nickname {
+    font-size: 0.75rem;
+    font-weight: 400;
 }
 
-/* ===  CONTAINER  ======================================= */
+
+.message-input {
+  background: rgba(116, 198, 157, 0.08);   /* 8% von #74C69D */
+  border: 1px solid #74C69D;
+  border-radius: 0.5rem;
+  width: 100%;
+
+  font-size: 16px;
+  color: #52B788;
+  
+  padding: 1rem 1rem;                      /* vertikal | horizontal */
+  box-sizing: border-box;
+}
+
+.message-input::placeholder {
+  color: rgba(82, 183, 136, 0.4);          /* hellere Farbe für Placeholder */
+}
+
+
 .message-input-container {
   display: flex;
-  width: 90%;
+  gap: 1rem;
   height: 50px;           /* → EINDEUTIGE Höhe für beide */
-  gap: 8px;
+
 }
 
-/* ===  GEMEINSAME BASIS  ================================ */
-.message-input,
+
+
 .send-button {
-  height: 100%;           /* → füllt die 50px des Containers */
-  box-sizing: border-box; /* → Border & Padding werden mitgerechnet */
-  margin: 0;              /* → kein Zusatzabstand */
-}
-
-/* ===  TEXTFELD  ======================================== */
-.message-input {
-  flex: 1;                      /* → nimmt den ganzen verfügbaren Platz */
-  padding: 0 16px;              /* → nur links/rechts, oben/unten = 0 */
-  border-radius: 24px;
-  border: 2px solid black;
-  resize: none;                 /* optional: User kann es nicht größer ziehen */
-  font-family: "Inter", sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;                           /* Abstand zwischen Icon und Text */
+  background-color: #1B4332;
+  color: #D8F3DC;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;                      /* vertikal | horizontal */
   font-size: 16px;
-  overflow-y: auto;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
-/* ===  BUTTON  ========================================== */
-.send-button {
-  flex: 0 0 60px;               /* feste Breite, gleiche Höhe wie Textfeld */
-  background-color: green;
-  border-radius: 24px;
-  border: 2px solid black;
-
-  display: flex;                /* Pfeil zentrieren */
+.send-button .icon {
+  color: #52B788;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+}
 
-  color: white;                 /* Pfeil weiß */
-  font-size: 28px;              /* größerer Pfeil */
-  font-weight: bold;
-  line-height: 1;               /* verhindert Verschiebungen */
-  cursor: pointer;
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.bubble{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
 }

@@ -1,41 +1,111 @@
-.nickname-container {
-    padding: 20px;
-    min-width: 5vw;
-    margin-right: 5vw;
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center; 
+  justify-content: space-evenly;
 
-    
+  flex: 1;
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-sizing: border-box;
+
+  box-shadow: 0 4px 25px rgba(27, 67, 50, 0.1);
+
+  position: relative;
+
+  overflow: hidden;
 }
 
 .heading{
-    font-size: 22px;
+    color: #52B788;
+    font-size: 28px;
     font-weight: 600;
+    margin: 0;
+}
+
+.heading2{
+    color: #52B788;
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0;
 }
 
 .send-button {
-    background-color: green;
-    font-weight: bold;
-    color: white;
-    border: none;
-    min-height: 20px;
-    border-radius: 8px;
-    border-width: 3px;
-    padding: 8px;
-    padding-left: 16px;
-    padding-right: 16px;
-    
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;                           /* Abstand zwischen Icon und Text */
+  background-color: #1B4332;
+  color: #D8F3DC;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 12px 16px;                      /* vertikal | horizontal */
+  font-size: 16px;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  z-index: 1;
 }
 
-.nickname-input{
-    border-radius: 8px;
-    border-width: 3px;
-    border-color: black;
-    border-style: solid;
-    min-height: 20px;
-    margin-bottom: 16px;
-    padding: 4px;
+.send-button .icon {
+  color: #52B788;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input {
+  background: rgba(116, 198, 157, 0.08);   /* 8% von #74C69D */
+  border: 1px solid #74C69D;
+  border-radius: 0.5rem;
+
+  font-size: 16px;
+  color: #52B788;          /* #52B788 bei 60% */
+  
+  padding: 12px 48px;                      /* vertikal | horizontal */
+  box-sizing: border-box;
+
+  z-index: 1;
+}
+
+.input::placeholder {
+  color: rgba(82, 183, 136, 0.4);          /* hellere Farbe für Placeholder */
+}
+
+.avatar-selection {
+  display: flex;
+  gap: 1rem;
+
+  z-index: 1;
+}
+
+.avatar-selection .avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border 0.2s;
+}
+
+.avatar-selection .avatar.selected {
+  border-color: #74C69D;  /* Rahmen um den gewählten Avatar */
+}
+
+
+.star1-nickname {
+  position: absolute;
+  right: 0;
+  top: 5%;
+  height: 25%;
+  z-index: 0;
+}
+
+.star2-nickname {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 40%;
+  z-index: 0;
 }

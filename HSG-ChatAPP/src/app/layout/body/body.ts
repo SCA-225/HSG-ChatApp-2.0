@@ -11,9 +11,11 @@ import { Nickname } from "../../chat/nickname/nickname";
 })
 export class BodyComponent {
 
-  nickname: string = '';
+nickname: string = '';
+avatar: string = '';
 
-setNickname(n: string) {
-  this.nickname = n;
+setNickname(data: { nickname: string; avatar: string }) {
+  this.nickname = data.nickname;
+  this.avatar = data.avatar;
 }
 }

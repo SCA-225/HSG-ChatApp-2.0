@@ -1,0 +1,10 @@
+:host {
+  width: 100%;           /* exakt gleiche Breite wie der Header */
+  height: 50%;
+  display: flex;
+  gap: 2.5rem;             /* Abstand zwischen Panels */
+  flex: 1;               /* nimmt den verfügbaren Höhenplatz ein */
+  box-sizing: border-box;
+
+  z-index: 1;
+}
