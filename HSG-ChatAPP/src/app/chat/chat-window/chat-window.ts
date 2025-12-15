@@ -33,12 +33,30 @@ export class ChatWindow implements OnInit, OnDestroy {
   messages: UiMessage[] = [];
   messageText: string = '';
 
+  private bannedWords: string[] = [
+  'fuck', 'shit', 'asshole', 'bitch', 'idiot', 'dumm', 'scheisse',
+  ];
+
+
   private pollHandle: ReturnType<typeof setInterval> | null = null;
   private lastMessageId = 0;
 
   // Farbpalette für fremde Nachrichten
   private otherColors: string[] = ['#D7F3DC', '#B7E4C7', '#95D5B2', '#74C79D', '#51B788'];
   private nicknameColors = new Map<string, string>();
+
+  // Schimpffilter
+  private filterBadWords(text: string): string {
+  let result = text;
+
+  this.bannedWords.forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+    result = result.replace(regex, '***');
+  });
+
+  return result;
+  }
+
 
   // --------------------------------------------------
   // Lifecycle
@@ -129,12 +147,14 @@ export class ChatWindow implements OnInit, OnDestroy {
     const text = this.messageText.trim();
     if (!text) return;
 
+    const cleanText = this.filterBadWords(text);
+
     try {
       const response = await fetch(`${API_BASE_URL}/history`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: text,
+          message: cleanText,
           nickname: this.nickname,
         }),
       });

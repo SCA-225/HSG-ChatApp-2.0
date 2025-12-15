@@ -37,7 +37,7 @@ function getNicknameEntryByName(name) {
 
 // root
 app.get('/', function (req, res, next) {
-  res.json({ message: 'hsg chat-app api works...' });
+  res.json({ message: 'HSG chat-app api works' });
 });
 
 // history
